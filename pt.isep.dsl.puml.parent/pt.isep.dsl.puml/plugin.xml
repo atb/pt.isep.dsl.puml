@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+	<extension point="org.eclipse.emf.ecore.generated_package">
+		<package 
+			uri = "http://www.isep.pt/dsl/puml/Puml"
+			class = "opt.isep.dsl.puml.puml.PumlPackage"
+			genModel = "model/generated/Puml.genmodel" />
+	</extension>
+</plugin>

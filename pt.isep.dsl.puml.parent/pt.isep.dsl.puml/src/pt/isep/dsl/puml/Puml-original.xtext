@@ -1,0 +1,272 @@
+// Class for generating the grammar for the PlantUML language.
+grammar opt.isep.dsl.puml.Puml 
+	//with org.eclipse.xtext.common.Terminals
+	hidden (WS, SL_COMMENT, ML_COMMENT)
+generate puml "http://www.isep.pt/dsl/puml/Puml"
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+
+// Model is a number of @startuml's and @enduml's
+Plantuml:
+	NEWLINE* (diagrams+=Diagram)*;
+	
+// A diagram starts with @Startuml and ends with @enduml, with some number of instructions in between
+Diagram:
+	startKeyword=START NEWLINE (instructions+=Instruction | NEWLINE)* endKeyword=END NEWLINE*
+;
+
+// An instruction can be any of the rules for single- and multiline commands.
+Instruction: 
+	{Instruction}(instr=Sequence
+	|instr = Definition
+	|instr = AutoNumber
+	|instr = Title
+	|instr = Legend
+	|instr = Newpage
+	|instr = GroupingMessages
+	|instr = Note
+	|instr = Divider
+	|instr = Reference 
+	|instr = Delay
+	|instr = Space
+	|instr = Hidefootbox
+	|instr = Activate
+	|instr = Deactivate
+	|instr = ParticipantCreation
+	|instr = Box
+	|instr = IncOut
+	|instr = Skinparam
+	|instr=Uc_direction) NEWLINE // |instr= UC_direction
+;
+
+// 2.11 direction usecase diagram is painted in (vertical or horizontal)
+Uc_direction:
+	{Uc_direction}((dir='top' 'to' 'bottom' 'direction')
+	|(dir='left' 'to' 'right' 'direction'))	
+;
+
+
+// Rules for declarations of actors
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+Declaration: (Definition|Sequence);
+
+// Rule for creating sequences between actors (Not necessarily previously defined)
+Sequence:
+	arrowIDs+=ArrowID arrow=Arrow arrowIDs+=ArrowID ('!')? (':' STRING)?
+;
+
+ArrowID:
+	name=ID | "(" name = ID ")" | ":" name = ID ":"
+;
+
+
+Arrow:
+	{Arrow} left=(LEFTARROWHEAD | LEFTARROWHEADEXTENSION)? ('[' '#' Color = Color ']')? 
+	leftmid+=(ARROWBODY | DOT)+ ('[' '#'  Color = Color ']' rightmid+=(ARROWBODY | DOT)+)?
+	 ('[' '#' Color = Color ']')? right=(RIGHTARROWHEAD | RIGHTARROWHEADEXTENSION)?
+;
+
+// Rule for defining objects in PlantUML, such as
+// actors, boundaries, controls, entities and databases
+Definition:
+	((startKeyword=('actor' 
+	| 'boundary'
+	| 'control'
+	| 'entity'
+	| 'database'
+	| 'participant'
+	| 'usecase')) name=ID 
+	| type="(" name=ID ")"
+	| type=":" name=ID ":") (Stereotype = Stereotype)? ('#' Color = Color)?
+;
+
+
+// 1.24 Stereotype, used in Participant_Declaration
+Stereotype:
+	{Stereotype}startKeyword='<<' ('(' CHAR ',' '#' Color = Color ')')? STRING? endKeyword='>>'
+;
+
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+
+
+
+// Rule for the autonumbering function. Can be followed by one or two numbers, separated by spaces
+AutoNumber:
+	{AutoNumber} startKeyword='autonumber' (numbers+=INT (numbers+=INT)?)? STRING?
+;
+
+// Rule for the title of the diagram
+Title:
+	startKeyword='title' title=STRING
+;
+
+// Rule for legends.
+Legend:
+
+	{Legend} startKeyword='legend' (pos=('right' | 'left' | 'center'))?
+	(NEWLINE text+=STRING)* NEWLINE (endKeyword='endlegend'|endKeyword='end legend')
+
+;
+
+// Rule for newpages
+Newpage:
+	startKeyword='newpage' text=STRING?
+;
+
+Else:
+	{Else} startKeyword='else' STRING NEWLINE (instructions+=Instruction)*
+;
+
+// Rule for "grouping-messages"
+GroupingMessages:
+	 {GroupingMessages} startKeyword=('opt'|'loop'|'par'|'break'|'critical'|'group'|'alt') STRING NEWLINE
+	(instructions+=Instruction)* (elses+=Else)* endKeyword='end'
+;
+
+// Rule for notes
+Note:
+	{Note} startKeyword='note' ((dir='right' ('of' ids+=[Declaration|ID] (',' ids+=[Declaration|ID])*)?)
+		   		 |(dir='left' ('of' ids+=[Declaration|ID] (',' ids+=[Declaration|ID])*)?)
+		  		 |(dir='over' ids+=[Declaration|ID](',' ids+=[Declaration|ID])*))
+		 		  ('#' Color = Color)? ((':' STRING)| (NEWLINE STRING? NEWLINE endKeyword=('end note'|'endnote')))
+
+;
+
+// Rule for Dividers.
+Divider:
+	startKeyword='==' text=STRING '=='
+;
+
+// Rule for References
+Reference:
+	startKeyword='ref over' (ids+=[Declaration|ID]) (',' ids+=[Declaration|ID])* 
+	(( ':' STRING)|((NEWLINE STRING)* NEWLINE endKeyword=('endref'|('end ref'))))
+;
+
+// Rule for delays
+// TODO: Read full strings even when containing dots (....).
+Delay:
+	{Delay} dotdotdot (text=STRING dotdotdot)?
+;
+
+dotdotdot:
+	DOT DOT DOT
+;
+
+// Rule for Spaces
+Space:
+	{Space}(startKeyword='|||'|(startKeyword='||' number=INT '||'))
+;
+
+// Rule for hiding the footbox
+Hidefootbox:
+	startKeyword=('hide footbox'|'hidefootbox')
+;
+
+// Rules for activation, deactivation and destruction of lifelines
+Activate:
+	startKeyword='activate' name=ID  ('#'(Color = Color))?
+;
+
+Deactivate:
+	startKeyword=('deactivate'|'destroy') id=[Activate|ID]
+;
+
+// Rule for Participant Creation
+ParticipantCreation:
+	startKeyword='create' (name=ID|dec=Declaration)
+;
+
+// Rule for box/end box
+Box:
+	{Box} startKeyword='box' text=STRING? ('#' Color = Color)? NEWLINE
+
+	(boxinstructions+=Instruction)+
+	endKeyword='end box'
+;
+
+ID:
+	CHAR | BASICID
+;
+IncArrow:
+	('[' ARROWBODY+ RIGHTARROWHEAD)|('[' LEFTARROWHEAD ARROWBODY+)
+;
+OutArrow:
+	(LEFTARROWHEAD ARROWBODY+ ']')|(ARROWBODY+ RIGHTARROWHEAD ']')
+;
+
+// Rule for incoming and outgoing messages
+IncOut:
+	((IncArrow name = ID)|(name = ID OutArrow)) (':' text = STRING)?
+;
+
+Skinparam:
+	{Skinparam} startKeyword='skinparam' cmd+=SkinparamCommand
+	| {Skinparam}startKeyword='skinparam' id=ID '{' NEWLINE (cmd+=SkinparamCommand? NEWLINE)* '}'
+;
+SkinparamCommand:
+	{SkinparamCommand} startKeyword=ID  (int_val=INT|('#' id_val=ID))
+;
+
+
+
+
+
+// ValueConverter checks if the Color is a proper color or a hexcode
+Color: ID|INT;
+
+// Terminals
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+
+terminal NEWLINE 	: ('\r'? '\n');
+
+terminal START		: '@' 'startuml';
+
+terminal END		: '@' 'enduml';
+
+// Multiline comment begins with /', and ends with '/
+terminal ML_COMMENT : '/\'' -> '\'/'; 
+
+// Singleline comment begins with ', and continues until end of line.
+terminal SL_COMMENT : '\'' !('\n'|'\r')*;
+
+terminal ARROWBODY:
+	'=' | '-'
+;
+
+terminal DOT:
+	'.'
+;
+
+terminal RIGHTARROWHEAD:
+	'>'
+;
+
+terminal LEFTARROWHEAD:
+	'<'
+;
+
+terminal RIGHTARROWHEADEXTENSION:
+	'x' | '>o' | '>x'
+;
+
+terminal LEFTARROWHEADEXTENSION:
+	'x' | 'o<' | 'x<'
+;
+
+// INT is a sequence of numbers 0-9.
+terminal INT returns ecore::EInt: ('0'..'9')+;
+
+terminal CHAR: ('a'..'z'|'A'..'Z'|'0'..'9' | 'å' | 'ä' | 'ö');
+
+terminal BASICID: ('a'..'z'|'A'..'Z'|'0'..'9' | 'å' | 'ä' | 'ö')*;
+
+terminal STRING: '"' -> '"';
+
+terminal WS: (' '|'\t')+;
+
+
+terminal ANY_OTHER: .;
