@@ -15,15 +15,15 @@ Require-Bundle: org.eclipse.xtext,
  org.eclipse.xtend.lib,
  org.eclipse.emf.common
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: opt.isep.dsl.puml.generator,
- opt.isep.dsl.puml.puml.impl,
- opt.isep.dsl.puml.puml,
- opt.isep.dsl.puml.parser.antlr,
- opt.isep.dsl.puml.scoping,
- opt.isep.dsl.puml.services,
- opt.isep.dsl.puml.parser.antlr.internal,
- opt.isep.dsl.puml.puml.util,
- opt.isep.dsl.puml.serializer,
- opt.isep.dsl.puml,
- opt.isep.dsl.puml.validation
+Export-Package: pt.isep.dsl.puml,
+ pt.isep.dsl.puml.puml.impl,
+ pt.isep.dsl.puml.serializer,
+ pt.isep.dsl.puml.puml,
+ pt.isep.dsl.puml.puml.util,
+ pt.isep.dsl.puml.parser.antlr,
+ pt.isep.dsl.puml.validation,
+ pt.isep.dsl.puml.scoping,
+ pt.isep.dsl.puml.generator,
+ pt.isep.dsl.puml.parser.antlr.internal,
+ pt.isep.dsl.puml.services
 Import-Package: org.apache.log4j

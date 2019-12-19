@@ -19,7 +19,7 @@ Require-Bundle: pt.isep.dsl.puml,
  org.eclipse.xtext.xbase.lib
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: opt.isep.dsl.puml.ui.quickfix,
- opt.isep.dsl.puml.ui.contentassist,
- pt.isep.dsl.puml.ui.internal
+Export-Package: pt.isep.dsl.puml.ui.internal,
+ pt.isep.dsl.puml.ui.contentassist,
+ pt.isep.dsl.puml.ui.quickfix
 Bundle-Activator: pt.isep.dsl.puml.ui.internal.PumlActivator

@@ -1,5 +1,5 @@
 // Class for generating the grammar for the PlantUML language.
-grammar opt.isep.dsl.puml.Puml 
+grammar pt.isep.dsl.puml.Puml 
 	//with org.eclipse.xtext.common.Terminals
 	hidden (WS, SL_COMMENT, ML_COMMENT)
 generate puml "http://www.isep.pt/dsl/puml/Puml"
