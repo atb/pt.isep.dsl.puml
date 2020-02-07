@@ -13,10 +13,9 @@ However, the tool is limited by not using a formal grammar. Without a grammar it
 This projet aims at providing a DSL for PlantUML.
 
 We such a tool, we should be able to:
-
-    - check the sintax of diagrams;
-    - check if a diagram references elements that exist in the source code;
-    - provide metrics for the diagrams, such as code coverage;
+ - check the sintax of diagrams;
+ - check if a diagram references elements that exist in the source code;
+ - provide metrics for the diagrams, such as code coverage;
 
 This work is based on the following related projects:
   - [Plantuml](https://github.com/atb/atb-plantuml)
