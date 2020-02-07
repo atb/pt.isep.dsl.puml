@@ -23,3 +23,5 @@ This work is based on the following related projects:
   - [Plantuml Ericsson](https://github.com/atb/atb-plantuml-ericsson)
   - [Plantuml Parser](https://github.com/atb/plantuml-parser)
   - [Plantuml Code Generator](https://github.com/atb/plantuml-code-generator)
+
+See other projects based on Xtext on [Xtext Community](https://www.eclipse.org/Xtext/community.html)
